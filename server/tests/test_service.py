@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from newmansound.model import Playlist, Song
 from newmansound.service import AudioPlaybackService, PlaylistService
 
-from tests.fixtures import engine, session
+from tests.fixtures import audio_playback_service, engine, session
 
 def _add_song(session, path):
     song = Song()
@@ -23,11 +23,7 @@ def _add_playlist(session, song, position):
 
 class TestAudioPlaybackService:
 
-    def test_play_song(self):
-        player_mock = MagicMock()
-
-        audio_playback_service = AudioPlaybackService(player_mock, MagicMock())
-
+    def test_play_song(self, audio_playback_service):
         song = Song()
         song.path = 'path'
 
@@ -38,15 +34,11 @@ class TestAudioPlaybackService:
         assert 1 == audio_playback_service._player.queue.call_count
         assert 1 == audio_playback_service._player.play.call_count
 
-    def test_play_song_gets_next_source_if_already_playing(self):
-        player_mock = MagicMock()
-
-        audio_playback_service = AudioPlaybackService(player_mock, MagicMock())
-
+    def test_play_song_gets_next_source_if_already_playing(self, audio_playback_service):
         song = Song()
         song.path = 'path'
 
-        player_mock.is_playing.return_value = True
+        audio_playback_service._player.playing.return_value = True
 
         audio_playback_service.play_song(song)
 

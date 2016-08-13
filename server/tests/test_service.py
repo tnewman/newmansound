@@ -1,9 +1,10 @@
 import pytest
-
-from tests.fixtures import engine, session
+from unittest.mock import MagicMock
 
 from newmansound.model import Playlist, Song
-from newmansound.service import PlaylistService
+from newmansound.service import AudioPlaybackService, PlaylistService
+
+from tests.fixtures import engine, session
 
 def _add_song(session, path):
     song = Song()
@@ -12,15 +13,31 @@ def _add_song(session, path):
 
     return song
 
+
 def _add_playlist(session, song, position):
     playlist = Playlist()
     playlist.song = song
     playlist.position = position
     session.add(playlist)
 
+
+class TestAudioPlaybackService:
+
+    def test_play_song(self):
+        audio_playback_service = AudioPlaybackService(MagicMock, MagicMock)
+
+        song = Song()
+        song.path = 'path'
+
+        audio_playback_service.play_song(song)
+
+        assert 1 == audio_playback_service._player.queue.call_count
+        assert 1 == audio_playback_service._player.play.call_count
+
+
 class TestPlaylistService:
 
-    def test_queue_song_adds_with_highest_position(self, session):
+    def test_enqueue_song_adds_with_highest_position(self, session):
         playlist_service = PlaylistService(session)
 
         song1 = _add_song(session, 'song1')
@@ -28,7 +45,7 @@ class TestPlaylistService:
 
         _add_playlist(session, song1, 2)
 
-        playlist_service.queue_song(song2)
+        playlist_service.enqueue_song(song2)
 
         assert 'song2' == session.query(Playlist).filter_by(position=3).first().song.path
 

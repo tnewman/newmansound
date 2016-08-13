@@ -7,6 +7,12 @@ from newmansound.model import Playlist
 
 class AudioPlaybackService:
     def __init__(self, player=pyglet.media.Player(), media_load_function=pyglet.media.load):
+        """Manages the playback of audio through the computer speakers.
+        :param player: Pyglet Player used to play audio.
+        :type player: pyglet.media.Player
+        :param media_load_function: Function used to load audio files.
+        :type media_load_function: function
+        """
         self._player = player
         self._media_load_function = media_load_function
 

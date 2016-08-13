@@ -24,15 +24,34 @@ def _add_playlist(session, song, position):
 class TestAudioPlaybackService:
 
     def test_play_song(self):
-        audio_playback_service = AudioPlaybackService(MagicMock, MagicMock)
+        player_mock = MagicMock()
+
+        audio_playback_service = AudioPlaybackService(player_mock, MagicMock())
 
         song = Song()
         song.path = 'path'
+
+        audio_playback_service._player.playing = False
 
         audio_playback_service.play_song(song)
 
         assert 1 == audio_playback_service._player.queue.call_count
         assert 1 == audio_playback_service._player.play.call_count
+
+    def test_play_song_gets_next_source_if_already_playing(self):
+        player_mock = MagicMock()
+
+        audio_playback_service = AudioPlaybackService(player_mock, MagicMock())
+
+        song = Song()
+        song.path = 'path'
+
+        player_mock.is_playing.return_value = True
+
+        audio_playback_service.play_song(song)
+
+        assert 1 == audio_playback_service._player.queue.call_count
+        assert 1 == audio_playback_service._player.next_source.call_count
 
 
 class TestPlaylistService:

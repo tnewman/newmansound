@@ -6,22 +6,23 @@ from newmansound.model import Playlist
 
 
 class AudioPlaybackService:
-    def __init__(self, player_class=pyglet.media.Player, media_load_function=pyglet.media.load):
-        self._player_class = player_class
+    def __init__(self, player=pyglet.media.Player(), media_load_function=pyglet.media.load):
+        self._player = player
         self._media_load_function = media_load_function
-
-        self._player = None
 
     def play_song(self, song):
         """Play a song through the computer speakers.
         :param song: Song to play
         :type song: Song"""
 
-        self._player = self._player_class()
         media = self._media_load_function(song.path)
 
         self._player.queue(media)
-        self._player.play()
+
+        if self._player.playing:
+            self._player.next_source()
+        else:
+            self._player.play()
 
 
 class PlaylistService:

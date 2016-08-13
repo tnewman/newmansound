@@ -20,7 +20,19 @@ def _add_playlist(session, song, position):
 
 class TestPlaylistService:
 
-    def test_get_first_song_returns_song_with_lowest_position(self, session):
+    def test_queue_song_adds_with_highest_position(self, session):
+        playlist_service = PlaylistService(session)
+
+        song1 = _add_song(session, 'song1')
+        song2 = _add_song(session, 'song2')
+
+        _add_playlist(session, song1, 2)
+
+        playlist_service.queue_song(song2)
+
+        assert 'song2' == session.query(Playlist).filter_by(position=3).first().song.path
+
+    def test_dequeue_song_returns_song_with_lowest_position(self, session):
         playlist_service = PlaylistService(session)
 
         song1 = _add_song(session, 'song1')
@@ -29,16 +41,16 @@ class TestPlaylistService:
         _add_playlist(session, song1, 2)
         _add_playlist(session, song2, 1)
 
-        assert song2 == playlist_service.get_first_song()
+        assert song2 == playlist_service.dequeue_song()
 
-    def test_add_song_adds_with_highest_position(self, session):
+    def test_dequeue_song_removes_song_from_queue(self, session):
         playlist_service = PlaylistService(session)
 
-        song1 = _add_song(session, 'song1')
-        song2 = _add_song(session, 'song2')
+        song = _add_song(session, 'song1')
 
-        _add_playlist(session, song1, 2)
+        _add_playlist(session, song, 1)
 
-        playlist_service.add_song(song2)
+        playlist_service.dequeue_song()
 
-        assert 'song2' == session.query(Playlist).filter_by(position=3).first().song.path
+        assert None == session.query(Playlist).first()
+

@@ -1,3 +1,4 @@
+from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
 from newmansound.model import Playlist
@@ -7,21 +8,11 @@ class PlaylistService:
     def __init__(self, session):
         """ Playlist Service
         :param session: SQLAlchemy session to use
+        :type session; Session
         """
         self.session = session
 
-    def get_first_song(self):
-        """ Retrieves the first song from the playlist
-        :returns: The first song from the playlist or None if there are no songs to play.
-        :rtype: Song
-        """
-
-        playlist_item = self.session.query(Playlist).order_by(Playlist.position).first()
-        song = playlist_item.song
-
-        return song
-
-    def add_song(self, song):
+    def queue_song(self, song):
         """ Adds a song to the end of the playlist
         :param song: Song to queue
         :type song: Song
@@ -37,3 +28,16 @@ class PlaylistService:
         playlist.position = max_position + 1
 
         self.session.add(playlist)
+
+    def dequeue_song(self):
+        """ Retrieves the first song from the playlist
+        :returns: The first song from the playlist or None if there are no songs to play.
+        :rtype: Song
+        """
+
+        playlist_item = self.session.query(Playlist).order_by(Playlist.position).first()
+        song = playlist_item.song
+
+        self.session.delete(playlist_item)
+
+        return song

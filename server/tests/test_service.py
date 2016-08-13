@@ -5,26 +5,40 @@ from tests.fixtures import engine, session
 from newmansound.model import Playlist, Song
 from newmansound.service import PlaylistService
 
+def _add_song(session, path):
+    song = Song()
+    song.path = path
+    session.add(song)
 
-def test_song_service_first_song_returns_first_song(session):
-    song_service = PlaylistService(session)
+    return song
 
-    song1 = Song()
-    song1.path = 'song1'
-    session.add(song1)
+def _add_playlist(session, song, position):
+    playlist = Playlist()
+    playlist.song = song
+    playlist.position = position
+    session.add(playlist)
 
-    song2 = Song()
-    song2.path = 'song2'
-    session.add(song2)
+class TestPlaylistService:
 
-    playlist1 = Playlist()
-    playlist1.song = song1
-    playlist1.position = 2
-    session.add(playlist1)
+    def test_get_first_song_returns_song_with_lowest_position(self, session):
+        playlist_service = PlaylistService(session)
 
-    playlist2 = Playlist()
-    playlist2.song = song2
-    playlist2.position = 1
-    session.add(playlist2)
+        song1 = _add_song(session, 'song1')
+        song2 = _add_song(session, 'song2')
 
-    assert song2 == song_service.get_first_song()
+        _add_playlist(session, song1, 2)
+        _add_playlist(session, song2, 1)
+
+        assert song2 == playlist_service.get_first_song()
+
+    def test_add_song_adds_with_highest_position(self, session):
+        playlist_service = PlaylistService(session)
+
+        song1 = _add_song(session, 'song1')
+        song2 = _add_song(session, 'song2')
+
+        _add_playlist(session, song1, 2)
+
+        playlist_service.add_song(song2)
+
+        assert 'song2' == session.query(Playlist).filter_by(position=3).first().song.path

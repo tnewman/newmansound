@@ -6,6 +6,7 @@ from newmansound.service import AudioPlaybackService, PlaylistService
 
 from tests.fixtures import audio_playback_service, engine, session
 
+
 def _add_song(session, path):
     song = Song()
     song.path = path
@@ -82,3 +83,7 @@ class TestPlaylistService:
 
         assert None == session.query(Playlist).first()
 
+    def test_dequeue_song_returns_none_on_empty_playlist(self, session):
+        playlist_service = PlaylistService(session)
+
+        assert None == playlist_service.dequeue_song()

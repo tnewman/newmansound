@@ -1,5 +1,4 @@
 import pyglet
-from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
 from newmansound.model import Playlist
@@ -64,8 +63,12 @@ class PlaylistService:
         """
 
         playlist_item = self.session.query(Playlist).order_by(Playlist.position).first()
-        song = playlist_item.song
 
-        self.session.delete(playlist_item)
+        if playlist_item:
+            song = playlist_item.song
 
-        return song
+            self.session.delete(playlist_item)
+
+            return song
+        else:
+            return None

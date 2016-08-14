@@ -1,5 +1,4 @@
 import pytest
-import pyglet
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from unittest.mock import MagicMock
@@ -12,8 +11,8 @@ from newmansound.service import AudioPlaybackService
 def audio_playback_service():
     """Creates an Audio Playback Service with a mock Media Player and Media Loader."""
 
-    mock_media_player = MagicMock(spec=pyglet.media.Player)
-    mock_media_loader = MagicMock(spec=pyglet.media.load)
+    mock_media_player = MagicMock()
+    mock_media_loader = MagicMock()
 
     playback_service = AudioPlaybackService(mock_media_player, mock_media_loader)
 

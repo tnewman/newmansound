@@ -1,5 +1,9 @@
 language: python
 python:
   - "3.5"
-install: "pip install -r server/requirements.txt"
+install:
+  - "pip install -r server/requirements.txt"
+  - "pip install coveralls"
 script: py.test
+after_success:
+  - coveralls

@@ -2,8 +2,7 @@ language: python
 python:
   - "3.5"
 install:
-  - "pip install -r server/requirements-travis.txt"
-  - "pip install coveralls"
+  - "pip install pytest pytest-cov sqlalchemy coveralls"
 script: py.test
 after_success:
   - coveralls

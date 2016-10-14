@@ -24,27 +24,15 @@ def _add_playlist(session, song, position):
 
 class TestAudioPlaybackService:
 
-    def test_play_song(self, audio_playback_service):
+    def test_queue_song(self, audio_playback_service):
         song = Song()
         song.path = 'path'
 
         audio_playback_service._player.playing = False
 
-        audio_playback_service.play_song(song)
+        audio_playback_service.queue_song(song)
 
         assert 1 == audio_playback_service._player.queue.call_count
-        assert 1 == audio_playback_service._player.play.call_count
-
-    def test_play_song_gets_next_source_if_already_playing(self, audio_playback_service):
-        song = Song()
-        song.path = 'path'
-
-        audio_playback_service._player.playing.return_value = True
-
-        audio_playback_service.play_song(song)
-
-        assert 1 == audio_playback_service._player.queue.call_count
-        assert 1 == audio_playback_service._player.next_source.call_count
 
 
 class TestPlaylistService:

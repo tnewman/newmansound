@@ -1,4 +1,4 @@
-pyglet
+pataudiotechnician
 pytest
 pytest-cov
 sqlalchemy

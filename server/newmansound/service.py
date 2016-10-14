@@ -4,39 +4,25 @@ from newmansound.model import Playlist
 
 
 class AudioPlaybackService:
-    def __init__(self, player, media_load_function):
+    def __init__(self, player=None):
         """Manages the playback of audio through the computer speakers.
-        :param player: Pyglet Player used to play audio.
-        :type player: pyglet.media.Player
+        :type player: PAT Audio Technician instance.
         :param media_load_function: Function used to load audio files.
         :type media_load_function: function
         """
 
         if player is None:
-            import pyglet
-            self._player = pyglet.media.Player()
+            import pat
+            self._player = pat
         else:
             self._player = player
 
-        if media_load_function is None:
-            import pyglet
-            self._media_load_function = pyglet.media.load
-        else:
-            self._media_load_function = media_load_function
-
-    def play_song(self, song):
+    def queue_song(self, song):
         """Play a song through the computer speakers.
         :param song: Song to play
         :type song: Song"""
 
-        media = self._media_load_function(song.path)
-
-        self._player.queue(media)
-
-        if self._player.playing:
-            self._player.next_source()
-        else:
-            self._player.play()
+        self._player.queue(song.path)
 
 
 class PlaylistService:

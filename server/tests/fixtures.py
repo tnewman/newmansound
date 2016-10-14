@@ -11,10 +11,9 @@ from newmansound.service import AudioPlaybackService
 def audio_playback_service():
     """Creates an Audio Playback Service with a mock Media Player and Media Loader."""
 
-    mock_media_player = MagicMock()
-    mock_media_loader = MagicMock()
+    pat_mock = MagicMock()
 
-    playback_service = AudioPlaybackService(mock_media_player, mock_media_loader)
+    playback_service = AudioPlaybackService(pat_mock)
 
     return playback_service
 

@@ -24,6 +24,13 @@ class AudioPlaybackService:
 
         self._player.queue(song.path)
 
+    def get_queue_len(self):
+        """Get the number of bytes still queued for playback.
+        :return: The number of bytes of audio still queued.
+        :rtype: int"""
+
+        return self._player.get_queue_len()
+
 
 class PlaylistService:
     def __init__(self, session):

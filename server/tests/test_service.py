@@ -24,15 +24,18 @@ def _add_playlist(session, song, position):
 
 class TestAudioPlaybackService:
 
-    def test_queue_song(self, audio_playback_service):
+    def test_queue_song_queues_song_for_playback(self, audio_playback_service):
         song = Song()
         song.path = 'path'
-
-        audio_playback_service._player.playing = False
 
         audio_playback_service.queue_song(song)
 
         assert 1 == audio_playback_service._player.queue.call_count
+
+    def test_get_bytes_queued_returns_bytes_queued(self, audio_playback_service):
+        audio_playback_service._player.get_queue_len.return_value = 1024
+
+        assert 1024 == audio_playback_service.get_queue_len()
 
 
 class TestPlaylistService:

@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import MagicMock
 
 from newmansound.model import Playlist, Song
 from newmansound.service import JukeboxService, PlaylistService
@@ -95,12 +94,23 @@ class TestPlaylistService:
 
         song1 = _add_song(session, 'song1')
         song2 = _add_song(session, 'song2')
+        session.commit()
 
         _add_playlist(session, song1, 2)
 
-        playlist_service.enqueue_song(song2)
+        playlist_service.enqueue_song(song2.id)
 
         assert 'song2' == session.query(Playlist).filter_by(position=3).first().song.path
+
+    def test_enqueue_uses_position_1_when_playlist_empty(self, session):
+        playlist_service = PlaylistService(session)
+
+        song1 = _add_song(session, 'song1')
+        session.commit()
+
+        playlist_service.enqueue_song(song1.id)
+
+        assert 1 == session.query(Playlist).first().position
 
     def test_peek_song_returns_song_with_lowest_position(self, session):
         playlist_service = PlaylistService(session)

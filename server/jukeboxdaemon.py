@@ -1,28 +1,22 @@
 import signal
 import sys
 import time
-from newmansound.model import Base
+import newmansound.database
 from newmansound.service import AudioPlaybackService, JukeboxService, PlaylistService
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-engine = create_engine('sqlite:///newmansound.db')
-Session = sessionmaker(bind=engine)
 
 stop_daemon = False
 
 
 def run_jukebox_daemon():
-    Base.metadata.create_all(bind=engine)
+    newmansound.database.init_db()
     signal.signal(signal.SIGINT, stop_jukebox_daemon)
 
+    session = newmansound.database.session()
+    playback_service = AudioPlaybackService()
+    playlist_service = PlaylistService(session)
+    jukebox_service = JukeboxService(playback_service, playlist_service)
+
     while not stop_daemon:
-        session = Session()
-
-        playback_service = AudioPlaybackService()
-        playlist_service = PlaylistService(session)
-        jukebox_service = JukeboxService(playback_service, playlist_service)
-
         try:
             jukebox_service.play_next_song()
             session.commit()
@@ -31,6 +25,8 @@ def run_jukebox_daemon():
             raise
 
         time.sleep(0.1)
+
+    session.close()
 
 
 def stop_jukebox_daemon(signal, frame):

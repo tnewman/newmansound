@@ -3,8 +3,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from unittest.mock import MagicMock
 
-from newmansound.model import Base
-from newmansound.service import AudioPlaybackService, PlaylistService
+import newmansound.database
+import newmansound.model
+from newmansound.restweb import app
+from newmansound.service import AudioPlaybackService, JukeboxService, PlaylistService
 
 
 @pytest.fixture(scope='function')
@@ -24,8 +26,8 @@ def engine():
     """Creates an in-memory SQLAlchemy database engine that will be created once and reused for all tests."""
 
     in_memory_engine = create_engine('sqlite:///:memory:')
-
-    Base.metadata.create_all(bind=in_memory_engine)
+    newmansound.database.engine = in_memory_engine
+    newmansound.database.init_db()
 
     return in_memory_engine
 
@@ -43,12 +45,28 @@ def session(request, engine):
 
     request.addfinalizer(finalizer)
 
+    app.session = session
+
     return session
 
 
 @pytest.fixture(scope='function')
 def playlist_service(session):
     """Creates a new Playlist Service with a SQLAlchemy session that will be rolled back after each test and a mock
-    ."""
+    audio player."""
 
     return PlaylistService(session)
+
+
+@pytest.fixture(scope='function')
+def jukebox_service(audio_playback_service, playlist_service):
+    """Creates a new Jukebox Service with a SQLAlchemy session that will be rolled back after each test and a mock
+    audio player."""
+
+    return JukeboxService(audio_playback_service, playlist_service)
+
+@pytest.fixture(scope='function')
+def client(playlist_service):
+    """ Creates a Flask client"""
+
+    return app.test_client()

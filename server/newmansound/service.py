@@ -1,6 +1,6 @@
 import logging
 from sqlalchemy.sql import func
-from newmansound.model import Playlist
+from newmansound.model import Song, Playlist
 
 logger = logging.getLogger(__name__)
 
@@ -65,16 +65,21 @@ class PlaylistService:
 
         self.session = session
 
-    def enqueue_song(self, song):
+    def enqueue_song(self, song_id):
         """ Adds a song to the end of the playlist
-        :param song: Song to queue
-        :type song: Song
+        :param song_id: Id of the Song to queue
+        :type song_id: int
         """
 
-        query = self.session.query(func.max(Playlist.position).label('max_position'))
-        result = query.one()
+        max_playlist_query = self.session.query(func.max(Playlist.position).label('max_position'))
+        max_playlist_result = max_playlist_query.one()
 
-        max_position = result.max_position
+        max_position = max_playlist_result.max_position
+
+        if max_position is None:
+            max_position = 0
+
+        song = self.session.query(Song).get(song_id)
 
         playlist = Playlist()
         playlist.song = song
@@ -91,7 +96,7 @@ class PlaylistService:
         return self._retrieve_song(True)
 
     def peek_song(self):
-        """Retrives the first song from the playlist without removing it
+        """Retrieves the first song from the playlist without removing it
         :returns: The first song from the playlist or None if there are no songs to play.
         :rtype: Song"""
 

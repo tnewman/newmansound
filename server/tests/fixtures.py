@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from unittest.mock import MagicMock
 
 from newmansound.model import Base
-from newmansound.service import AudioPlaybackService
+from newmansound.service import AudioPlaybackService, PlaylistService
 
 
 @pytest.fixture(scope='function')
@@ -43,3 +43,11 @@ def session(request, engine):
     request.addfinalizer(finalizer)
 
     return session
+
+
+@pytest.fixture(scope='function')
+def playlist_service(session):
+    """Creates a new Playlist Service with a SQLAlchemy session that will be rolled back after each test and a mock
+    ."""
+
+    return PlaylistService(session)

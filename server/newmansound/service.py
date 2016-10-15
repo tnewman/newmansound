@@ -32,6 +32,24 @@ class AudioPlaybackService:
         return self._player.get_queue_len()
 
 
+class JukeboxService:
+    def __init__(self, playback_service, playlist_service):
+        """ Coordinates the jukebox. Responsible for dequeing music from the playlist and playing it over the
+        speakers.
+        :param playback_service: AudioPlaybackService instance that will play audio over the speakers.
+        :type playback_service: AudioPlaybackService
+        :param playlist_service: PlaylistService instance that will provide the queue of songs to play.
+        :type playlist_service: PlaylistService"""
+
+        self._playback_service = playback_service
+        self._playlist_service = playlist_service
+
+    def play_next_song(self):
+        song = self._playlist_service.dequeue_song()
+
+        if not song is None:
+            self._playback_service.queue_song(song)
+
 class PlaylistService:
     def __init__(self, session):
         """ Playlist Service

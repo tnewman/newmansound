@@ -2,9 +2,9 @@ import pytest
 from unittest.mock import MagicMock
 
 from newmansound.model import Playlist, Song
-from newmansound.service import AudioPlaybackService, PlaylistService
+from newmansound.service import JukeboxService, PlaylistService
 
-from tests.fixtures import audio_playback_service, engine, session
+from tests.fixtures import audio_playback_service, playlist_service, engine, session
 
 
 def _add_song(session, path):
@@ -36,6 +36,26 @@ class TestAudioPlaybackService:
         audio_playback_service._player.get_queue_len.return_value = 1024
 
         assert 1024 == audio_playback_service.get_queue_len()
+
+
+class TestJukeboxService:
+
+    def test_jukebox_service_plays_song(self, audio_playback_service, playlist_service, session):
+        jukebox_service = JukeboxService(audio_playback_service, playlist_service)
+
+        song = _add_song(session, 'song')
+        _add_playlist(session, song, 1)
+
+        jukebox_service.play_next_song()
+
+        audio_playback_service._player.queue.assert_called_with('song')
+
+    def test_jukebox_service_does_not_play_none_song(self, audio_playback_service, playlist_service, session):
+        jukebox_service = JukeboxService(audio_playback_service, playlist_service)
+
+        jukebox_service.play_next_song()
+
+        assert 0 == audio_playback_service._player.queue.call_count
 
 
 class TestPlaylistService:

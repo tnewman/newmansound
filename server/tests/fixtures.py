@@ -12,6 +12,7 @@ def audio_playback_service():
     """Creates an Audio Playback Service with a mock Media Player and Media Loader."""
 
     pat_mock = MagicMock(autospec=True)
+    pat_mock.get_queue_len.return_value = 0
 
     playback_service = AudioPlaybackService(pat_mock)
 

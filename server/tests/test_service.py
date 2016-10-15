@@ -57,6 +57,19 @@ class TestJukeboxService:
 
         assert 0 == audio_playback_service._player.queue.call_count
 
+    def test_jukebox_service_does_not_queue_until_buffer_is_low(self, audio_playback_service, playlist_service,
+                                                                session):
+        jukebox_service = JukeboxService(audio_playback_service, playlist_service)
+
+        audio_playback_service._player.get_queue_len.return_value = 1000000
+
+        song = _add_song(session, 'song')
+        _add_playlist(session, song, 1)
+
+        jukebox_service.play_next_song()
+
+        assert 0 == audio_playback_service._player.queue.call_count
+
 
 class TestPlaylistService:
 

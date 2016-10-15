@@ -48,7 +48,9 @@ class JukeboxService:
         song = self._playlist_service.dequeue_song()
 
         if not song is None:
-            self._playback_service.queue_song(song)
+            if self._playback_service.get_queue_len() < 100000:
+                self._playback_service.queue_song(song)
+
 
 class PlaylistService:
     def __init__(self, session):

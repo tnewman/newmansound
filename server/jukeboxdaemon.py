@@ -11,6 +11,7 @@ Session = sessionmaker(bind=engine)
 
 stop_daemon = False
 
+
 def run_jukebox_daemon():
     Base.metadata.create_all(bind=engine)
     signal.signal(signal.SIGINT, stop_jukebox_daemon)

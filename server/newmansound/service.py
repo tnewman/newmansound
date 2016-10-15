@@ -1,6 +1,8 @@
+import logging
 from sqlalchemy.sql import func
-
 from newmansound.model import Playlist
+
+logger = logging.getLogger(__name__)
 
 
 class AudioPlaybackService:
@@ -45,11 +47,13 @@ class JukeboxService:
         self._playlist_service = playlist_service
 
     def play_next_song(self):
-        song = self._playlist_service.dequeue_song()
+        peek_song = self._playlist_service.peek_song()
 
-        if not song is None:
+        if not peek_song is None:
             if self._playback_service.get_queue_len() < 100000:
-                self._playback_service.queue_song(song)
+                song = self._playlist_service.dequeue_song()
+                logger.log(logging.INFO, 'Playing Song %s', peek_song.path)
+                self._playback_service.queue_song(peek_song)
 
 
 class PlaylistService:
@@ -79,17 +83,28 @@ class PlaylistService:
         self.session.add(playlist)
 
     def dequeue_song(self):
-        """ Retrieves the first song from the playlist
+        """ Retrieves and removes the first song from the playlist
         :returns: The first song from the playlist or None if there are no songs to play.
         :rtype: Song
         """
 
+        return self._retrieve_song(True)
+
+    def peek_song(self):
+        """Retrives the first song from the playlist without removing it
+        :returns: The first song from the playlist or None if there are no songs to play.
+        :rtype: Song"""
+
+        return self._retrieve_song(False)
+
+    def _retrieve_song(self, delete):
         playlist_item = self.session.query(Playlist).order_by(Playlist.position).first()
 
         if playlist_item:
             song = playlist_item.song
 
-            self.session.delete(playlist_item)
+            if delete:
+                self.session.delete(playlist_item)
 
             return song
         else:

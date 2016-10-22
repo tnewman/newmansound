@@ -86,6 +86,17 @@ class TestJukeboxService:
 
         assert 1 == audio_playback_service._player.queue.call_count
 
+    def test_jukebox_service_dequeues_garbage_from_playlist(self, audio_playback_service, playlist_service, session):
+        jukebox_service = JukeboxService(audio_playback_service, playlist_service)
+
+        _add_playlist(session, None, 1)
+        _add_playlist(session, None, 1)
+        _add_playlist(session, None, 1)
+        _add_playlist(session, None, 1)
+
+        jukebox_service.play_next_song()
+
+        assert playlist_service.peek_song() is None
 
 class TestPlaylistService:
 

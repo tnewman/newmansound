@@ -34,8 +34,5 @@ class TestSongRequest:
 
         song_schema = SongSchema()
 
-        song_schema.load(json.loads(client.get('/song').data.decode('utf8')))
-
-        song_service = SongService(session)
-
-        assert len(song_service.all()) == 2
+        songs = song_schema.load(json.loads(client.get('/song').data.decode('utf8')))
+        assert len(songs) == 2

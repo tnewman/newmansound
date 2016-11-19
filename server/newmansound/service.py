@@ -114,3 +114,19 @@ class PlaylistService:
             return song
         else:
             return None
+
+
+class SongService:
+    def __init__(self, session):
+        """ Song Service
+        :param session: SQLAlchemy session to use
+        :type session; Session
+        """
+        self.session = session
+
+    def all(self):
+        """Retrives all songs.
+        :returns: A list of all songs.
+        :rtype: list of Song
+        :"""
+        return self.session.query(Song).all()

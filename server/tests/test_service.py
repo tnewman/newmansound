@@ -1,7 +1,7 @@
 import pytest
 
 from newmansound.model import Playlist, Song
-from newmansound.service import JukeboxService, PlaylistService
+from newmansound.service import JukeboxService, PlaylistService, SongService
 
 from tests.fixtures import audio_playback_service, playlist_service, engine, session
 
@@ -97,6 +97,19 @@ class TestJukeboxService:
         jukebox_service.play_next_song()
 
         assert playlist_service.peek_song() is None
+
+
+class TestSongService:
+
+    def test_song_service_returns_all_songs(self, session):
+        song_service = SongService(session)
+
+        song1 = _add_song(session, 'song1')
+        song2 = _add_song(session, 'song2')
+
+        assert song_service.all()[0].path == 'song1'
+        assert len(song_service.all()) == 2
+
 
 class TestPlaylistService:
 

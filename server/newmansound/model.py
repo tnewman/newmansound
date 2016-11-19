@@ -8,10 +8,27 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 
+class Artist(Base):
+    __tablename__ = 'artist'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
+
+class Album(Base):
+    __tablename__ = 'album'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    artist_id = Column(Integer, ForeignKey('artist.id'))
+
+
 class Song(Base):
     __tablename__ = 'song'
 
     id = Column(Integer, primary_key=True)
+    name = Column(String)
+    album_id = Column(Integer, ForeignKey('song.id'))
     path = Column(String)
 
 

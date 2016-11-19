@@ -1,7 +1,6 @@
 flask
 flask_restful
 marshmallow
-marshmallow-sqlalchemy
 pataudiotechnician
 pytest
 pytest-cov

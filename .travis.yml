@@ -2,7 +2,7 @@ language: python
 python:
   - "3.5"
 install:
-  - "pip install pytest pytest-cov coveralls && pip install -r server/requirements.txt"
+  - "pip install pytest pytest-cov flask flask_restful marshmallow sqlalchemy coveralls"
 script: py.test --cov=newmansound
 after_success:
   - coveralls

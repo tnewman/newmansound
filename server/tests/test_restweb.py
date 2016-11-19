@@ -2,6 +2,7 @@ import json
 import pytest
 from newmansound.model import Artist, Album, Song
 from newmansound.restweb import app, PlaylistService, SongService
+from newmansound.schema import SongSchema
 
 from tests.fixtures import client, engine, playlist_service, session
 
@@ -30,6 +31,10 @@ class TestSongRequest:
         song2.name = 'song'
         session.add(song2)
         session.commit()
+
+        song_schema = SongSchema()
+
+        song_schema.load(json.loads(client.get('/song').data.decode('utf8')))
 
         song_service = SongService(session)
 

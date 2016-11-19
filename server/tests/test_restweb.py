@@ -22,11 +22,15 @@ class TestPlaylistRequest:
 class TestSongRequest:
 
     def test_get_returns_list_of_songs(self, client, session):
-        song = Song()
-        song.name = 'song'
-        session.add(song)
+        song1 = Song()
+        song1.name = 'song'
+        session.add(song1)
+
+        song2 = Song()
+        song2.name = 'song'
+        session.add(song2)
         session.commit()
 
         song_service = SongService(session)
 
-        assert song_service.all()[0].name == 'song'
+        assert len(song_service.all()) == 2

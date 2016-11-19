@@ -21,6 +21,7 @@ class Album(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     artist_id = Column(Integer, ForeignKey('artist.id'))
+    artist = relationship('Artist')
 
 
 class Song(Base):
@@ -28,7 +29,8 @@ class Song(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    album_id = Column(Integer, ForeignKey('song.id'))
+    album_id = Column(Integer, ForeignKey('album.id'))
+    album = relationship('Album')
     path = Column(String)
 
 

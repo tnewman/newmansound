@@ -1,8 +1,8 @@
 from flask import Flask, request
 from flask_restful import Api, Resource
 from newmansound.database import scoped_session
-from newmansound.schema import PlaylistRequestSchema
-from newmansound.service import AudioPlaybackService, JukeboxService, PlaylistService
+from newmansound.schema import PlaylistRequestSchema, SongSchema
+from newmansound.service import AudioPlaybackService, JukeboxService, PlaylistService, SongService
 
 app = Flask('newmansoundrestweb')
 api = Api(app)
@@ -21,7 +21,18 @@ class PlaylistRequest(Resource):
         app.session.commit()
 
 
+class SongRequest(Resource):
+    def __init__(self):
+        self.song_schema = SongSchema()
+        self.song_service = SongService(app.session)
+
+    def get(self):
+        songs = self.song_service.all()
+        return self.song_schema.dump(songs)
+
+
 api.add_resource(PlaylistRequest, '/playlist')
+api.add_resource(SongRequest, '/song')
 
 
 @app.teardown_appcontext

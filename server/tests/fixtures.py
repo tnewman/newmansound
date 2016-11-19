@@ -35,13 +35,15 @@ def engine():
 @pytest.fixture(scope='function')
 def session(request, engine):
     """Creates a new SQLAlchemy Session for each test that will be rolled back after each test execution."""
-
-    session_class = sessionmaker(bind=engine)
+    connection = engine.connect()
+    transaction = connection.begin()
+    session_class = sessionmaker(bind=connection)
     session = session_class()
 
     def finalizer():
-        session.rollback()
+        transaction.rollback()
         session.close()
+        connection.close()
 
     request.addfinalizer(finalizer)
 

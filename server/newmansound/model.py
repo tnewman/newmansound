@@ -1,4 +1,3 @@
-from contextlib import contextmanager
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer

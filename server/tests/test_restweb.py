@@ -1,3 +1,4 @@
+import json
 import pytest
 from newmansound.model import Song
 from newmansound.restweb import app, PlaylistService
@@ -13,6 +14,6 @@ class TestPlaylistRequest:
         session.add(song)
         session.commit()
 
-        client.post('/playlist', data={'song_id': song.id})
+        client.post('/playlist', data=json.dumps({'id': song.id}), content_type='application/json')
 
         assert playlist_service.peek_song().id == 1

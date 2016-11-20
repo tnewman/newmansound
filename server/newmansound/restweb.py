@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 from newmansound.database import scoped_session
 from newmansound.schema import PlaylistRequestSchema, SongSchema
@@ -28,8 +28,8 @@ class SongRequest(Resource):
 
     def get(self):
         songs = self.song_service.all()
-        songs_json = self.song_schema.dumps(songs, many=True).data
-        return songs_json
+        data = self.song_schema.dump(songs, many=True).data
+        return data
 
 
 api.add_resource(PlaylistRequest, '/playlist')

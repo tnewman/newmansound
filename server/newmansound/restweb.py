@@ -28,7 +28,8 @@ class SongRequest(Resource):
 
     def get(self):
         songs = self.song_service.all()
-        return self.song_schema.dump(songs)
+        songs_json = self.song_schema.dumps(songs, many=True).data
+        return songs_json
 
 
 api.add_resource(PlaylistRequest, '/playlist')

@@ -36,6 +36,14 @@ class TestAudioPlaybackService:
 
         assert 1024 == audio_playback_service.get_queue_len()
 
+    def test_audio_playback_service_handles_exception(self, audio_playback_service):
+        song = Song()
+        song.path = 'path'
+        audio_playback_service._player.queue.side_effect = Exception()
+
+        with pytest.raises(Exception):
+            audio_playback_service.queue_song(song)
+
 
 class TestJukeboxService:
 
@@ -97,6 +105,15 @@ class TestJukeboxService:
         jukebox_service.play_next_song()
 
         assert playlist_service.peek_song() is None
+
+    def test_jukebox_service_handles_exception(self, audio_playback_service, playlist_service, session):
+        jukebox_service = JukeboxService(audio_playback_service, playlist_service)
+        audio_playback_service._player.queue.side_effect = Exception()
+
+        song = _add_song(session, 'song')
+        _add_playlist(session, song, 1)
+
+        jukebox_service.play_next_song()
 
 
 class TestSongService:

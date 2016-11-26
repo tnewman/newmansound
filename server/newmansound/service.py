@@ -53,7 +53,11 @@ class JukeboxService:
             if self._playback_service.get_queue_len() < 100000:
                 song = self._playlist_service.dequeue_song()
                 logger.log(logging.INFO, 'Playing Song %s', peek_song.path)
-                self._playback_service.queue_song(peek_song)
+
+                try:
+                    self._playback_service.queue_song(peek_song)
+                except Exception as e:
+                    logger.exception(e)
 
 
 class PlaylistService:

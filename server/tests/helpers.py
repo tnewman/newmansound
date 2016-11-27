@@ -3,21 +3,11 @@ from tests.fixtures import engine, session
 
 
 def add_album(session, name=''):
-    album = Album()
-    album.name = name
-    session.add(album)
-    session.commit()
-
-    return album
+    return _add(session, Album, name)
 
 
 def add_artist(session, name=''):
-    artist = Artist()
-    artist.name = name
-    session.add(artist)
-    session.commit()
-
-    return artist
+    return _add(session, Artist, name)
 
 
 def add_song(session, path='', name=''):
@@ -28,3 +18,12 @@ def add_song(session, path='', name=''):
     session.commit()
 
     return song
+
+
+def _add(session, type, name):
+    object  = type()
+    object.name = name
+    session.add(object)
+    session.commit()
+
+    return object

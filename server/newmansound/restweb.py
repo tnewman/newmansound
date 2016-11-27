@@ -25,35 +25,45 @@ class PlaylistRequest(Resource):
         app.session.commit()
 
 
-class SongList(Resource):
-    def __init__(self):
-        self.song_schema = SongSchema()
-        self.song_service = SongService(app.session)
+class BaseResource(Resource):
+    def __init__(self, schema, service):
+        self.schema = schema
+        self.service = service
 
-    def get(self):
-        songs = self.song_service.all()
-        data = self.song_schema.dump(songs, many=True).data
-        return data
+    def get(self, id):
+        data = self.service.get(id)
 
-
-class Song(Resource):
-    def __init__(self):
-        self.song_schema = SongSchema()
-        self.song_service = SongService(app.session)
-
-    def get(self, song_id):
-        song = self.song_service.get(song_id)
-
-        if not song:
+        if not data:
             abort(404)
 
-        data = self.song_schema.dump(song).data
-        return data
+        json = self.schema.dump(data).data
+        return json
+
+
+class BaseListResource(Resource):
+    def __init__(self, schema, service):
+        self.schema = schema
+        self.service = service
+
+    def get(self):
+        data = self.service.all()
+        json = self.schema.dump(data, many=True).data
+        return json
+
+
+class SongList(BaseListResource):
+    def __init__(self):
+        super().__init__(SongSchema(), SongService(app.session))
+
+
+class Song(BaseResource):
+    def __init__(self):
+        super().__init__(SongSchema(), SongService(app.session))
 
 
 api.add_resource(PlaylistRequest, '/playlist')
 api.add_resource(SongList, '/song')
-api.add_resource(Song, '/song/<song_id>')
+api.add_resource(Song, '/song/<id>')
 
 
 @app.teardown_appcontext

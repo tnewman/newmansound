@@ -107,7 +107,7 @@ class TestJukeboxService:
         jukebox_service.play_next_song()
 
 
-class TestBaseDataService:
+class TestDataService:
 
     def test_all_returns_all_items(self, session):
         base_data_service = BaseDataService(session, Song)
@@ -129,25 +129,23 @@ class TestBaseDataService:
 class TestAlbumService:
 
     def test_album_service_uses_album_type(self, session):
-        album1 = add_album(session)
-
-        assert AlbumService(session).get(album1.id) == album1
+        _assert_correct_object(session, AlbumService, add_album(session))
 
 
 class TestArtistService:
 
     def test_artist_service_uses_artist_type(self, session):
-        artist1 = add_artist(session)
-
-        assert ArtistService(session).get(artist1.id) == artist1
+        _assert_correct_object(session, ArtistService, add_artist(session))
 
 
 class TestSongService:
 
     def test_song_service_uses_song_type(self, session):
-        song1 = add_song(session)
+        _assert_correct_object(session, SongService, add_song(session))
 
-        assert SongService(session).get(song1.id) == song1
+
+def _assert_correct_object(session, service_type, correct_object):
+    assert service_type(session).get(correct_object.id) == correct_object
 
 
 class TestPlaylistService:

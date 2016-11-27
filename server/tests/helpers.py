@@ -21,9 +21,9 @@ def add_song(session, path='', name=''):
 
 
 def _add(session, type, name):
-    object  = type()
-    object.name = name
-    session.add(object)
+    item = type()
+    item.name = name
+    session.add(item)
     session.commit()
 
-    return object
+    return item

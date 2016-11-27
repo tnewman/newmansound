@@ -1,6 +1,6 @@
 import logging
 from sqlalchemy.sql import func
-from newmansound.model import Song, Playlist
+from newmansound.model import Album, Artist, Song, Playlist
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +129,14 @@ class BaseDataService:
         :returns: Item for the given id or None if the item does not exist.
         :rtype: Song"""
         return self.session.query(self.model_type).get(id)
+
+
+class AlbumService(BaseDataService):
+    def __init__(self, session):
+        """ Album Service
+        :param session: SQLAlchemy session to use
+        :type session: Session"""
+        super().__init__(session, Album)
 
 
 class SongService(BaseDataService):

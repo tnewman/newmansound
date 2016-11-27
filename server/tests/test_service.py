@@ -104,7 +104,7 @@ class TestJukeboxService:
 
         jukebox_service.play_next_song()
 
-        assert playlist_service.peek_song() is None
+        assert playlist_service.dequeue_song() is None
 
     def test_jukebox_service_handles_exception(self, audio_playback_service, playlist_service, session):
         jukebox_service = JukeboxService(audio_playback_service, playlist_service)
@@ -153,33 +153,6 @@ class TestPlaylistService:
 
         assert 1 == session.query(Playlist).first().position
 
-    def test_peek_song_returns_song_with_lowest_position(self, session):
-        playlist_service = PlaylistService(session)
-
-        song1 = _add_song(session, 'song1')
-        song2 = _add_song(session, 'song2')
-
-        _add_playlist(session, song1, 2)
-        _add_playlist(session, song2, 1)
-
-        assert song2 == playlist_service.peek_song()
-
-    def test_peek_song_returns_none_on_empty_playlist(self, session):
-        playlist_service = PlaylistService(session)
-
-        assert None is playlist_service.peek_song()
-
-    def test_peek_song_does_not_remove_song_from_queue(self, session):
-        playlist_service = PlaylistService(session)
-
-        song = _add_song(session, 'song1')
-
-        _add_playlist(session, song, 1)
-
-        playlist_service.peek_song()
-
-        assert not None is session.query(Playlist).first()
-
     def test_dequeue_song_returns_song_with_lowest_position(self, session):
         playlist_service = PlaylistService(session)
 
@@ -194,7 +167,7 @@ class TestPlaylistService:
     def test_dequeue_song_returns_none_on_empty_playlist(self, session):
         playlist_service = PlaylistService(session)
 
-        assert None is playlist_service.peek_song()
+        assert None is playlist_service.dequeue_song()
 
     def test_dequeue_song_removes_song_from_queue(self, session):
         playlist_service = PlaylistService(session)

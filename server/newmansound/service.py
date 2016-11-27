@@ -8,9 +8,8 @@ logger = logging.getLogger(__name__)
 class AudioPlaybackService:
     def __init__(self, player=None):
         """Manages the playback of audio through the computer speakers.
-        :type player: PAT Audio Technician instance.
-        :param media_load_function: Function used to load audio files.
-        :type media_load_function: function
+        :param player: PAT Audio Technician instance
+        :type player: PAT Audio Technician.
         """
 
         if player is None:
@@ -47,15 +46,14 @@ class JukeboxService:
         self._playlist_service = playlist_service
 
     def play_next_song(self):
-        peek_song = self._playlist_service.peek_song()
+        if self._playback_service.get_queue_len() < 100000:
+            song = self._playlist_service.dequeue_song()
 
-        if not peek_song is None:
-            if self._playback_service.get_queue_len() < 100000:
-                song = self._playlist_service.dequeue_song()
-                logger.log(logging.INFO, 'Playing Song %s', peek_song.path)
+            if song:
+                logger.log(logging.INFO, 'Playing Song %s', song.path)
 
                 try:
-                    self._playback_service.queue_song(peek_song)
+                    self._playback_service.queue_song(song)
                 except Exception as e:
                     logger.exception(e)
 
@@ -97,23 +95,12 @@ class PlaylistService:
         :rtype: Song
         """
 
-        return self._retrieve_song(True)
-
-    def peek_song(self):
-        """Retrieves the first song from the playlist without removing it
-        :returns: The first song from the playlist or None if there are no songs to play.
-        :rtype: Song"""
-
-        return self._retrieve_song(False)
-
-    def _retrieve_song(self, delete):
         playlist_item = self.session.query(Playlist).order_by(Playlist.position).first()
 
         if playlist_item:
             song = playlist_item.song
 
-            if delete:
-                self.session.delete(playlist_item)
+            self.session.delete(playlist_item)
 
             return song
         else:

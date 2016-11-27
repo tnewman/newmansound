@@ -17,7 +17,7 @@ class TestPlaylistRequest:
 
         client.post('/playlist', data=json.dumps({'id': song.id}), content_type='application/json')
 
-        assert playlist_service.peek_song().path == 'newsong'
+        assert playlist_service.dequeue_song().path == 'newsong'
 
 
 class TestSongRequest:

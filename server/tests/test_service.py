@@ -1,7 +1,8 @@
 import pytest
 
 from newmansound.model import Album, Artist, Playlist, Song
-from newmansound.service import AlbumService, BaseDataService, JukeboxService, PlaylistService, SongService
+from newmansound.service import AlbumService, ArtistService, BaseDataService, JukeboxService, PlaylistService, \
+    SongService
 
 from tests.helpers import add_album, add_artist, add_song
 from tests.fixtures import audio_playback_service, playlist_service, engine, session
@@ -133,6 +134,16 @@ class TestAlbumService:
         album1 = add_album(session)
 
         assert album_service.get(album1.id) == album1
+
+
+class TestArtistService:
+
+    def test_artist_service_uses_artist_type(self, session):
+        artist_service = ArtistService(session)
+
+        artist1 = add_artist(session)
+
+        assert artist_service.get(artist1.id) == artist1
 
 
 class TestSongService:

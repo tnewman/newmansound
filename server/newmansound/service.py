@@ -139,6 +139,14 @@ class AlbumService(BaseDataService):
         super().__init__(session, Album)
 
 
+class ArtistService(BaseDataService):
+    def __init__(self, session):
+        """ Artist Service
+        :param session: SQLAlchemy session to use
+        :type session: Session"""
+        super().__init__(session, Artist)
+
+
 class SongService(BaseDataService):
     def __init__(self, session):
         """ Song Service

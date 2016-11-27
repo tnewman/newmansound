@@ -107,23 +107,34 @@ class PlaylistService:
             return None
 
 
-class SongService:
+class BaseDataService:
+    def __init__(self, session, model_type):
+        """Performs CRUD operations against the database.
+        :param session: SQLAlchemy session.
+        :type session: Session
+        :param model_type: Model type to use for database queries.
+        :type model_type: type"""
+        self.session = session
+        self.model_type = model_type
+
+    def all(self):
+        """Retrieves all items.
+        :returns: A list of all items.
+        :rtype: list
+        :"""
+        return self.session.query(self.model_type).all()
+
+    def get(self, id):
+        """Retrieves an item with a given id.
+        :returns: Item for the given id or None if the item does not exist.
+        :rtype: Song"""
+        return self.session.query(self.model_type).get(id)
+
+
+class SongService(BaseDataService):
     def __init__(self, session):
         """ Song Service
         :param session: SQLAlchemy session to use
-        :type session; Session
+        :type session: Session
         """
-        self.session = session
-
-    def all(self):
-        """Retrieves all songs.
-        :returns: A list of all songs.
-        :rtype: list of Song
-        :"""
-        return self.session.query(Song).all()
-
-    def get(self, song_id):
-        """Retrieves a song with a given song id.
-        :returns: Song for the given song id or None if the song does not exist.
-        :rtype: Song"""
-        return self.session.query(Song).get(song_id)
+        super().__init__(session, Song)

@@ -1,7 +1,7 @@
 import pytest
 
 from newmansound.model import Playlist, Song
-from newmansound.service import JukeboxService, PlaylistService, SongService
+from newmansound.service import BaseDataService, JukeboxService, PlaylistService, SongService
 
 from tests.helpers import add_song
 from tests.fixtures import audio_playback_service, playlist_service, engine, session
@@ -106,26 +106,33 @@ class TestJukeboxService:
         jukebox_service.play_next_song()
 
 
-class TestSongService:
+class TestBaseDataService:
 
-    def test_song_service_returns_all_songs(self, session):
-        song_service = SongService(session)
+    def test_all_returns_all_items(self, session):
+        base_data_service = BaseDataService(session, Song)
 
-        add_song(session, path='song1')
-        add_song(session, path='song2')
+        add_song(session)
+        add_song(session)
 
-        assert song_service.all()[0].path == 'song1'
-        assert len(song_service.all()) == 2
+        assert len(base_data_service.all()) == 2
 
-    def test_song_service_returns_correct_song(self, session):
-        song_service = SongService(session)
+    def test_get_returns_correct_song(self, session):
+        base_data_service = BaseDataService(session, Song)
 
         song1 = add_song(session, path='song1')
         add_song(session, path='song2')
 
-        session.commit()
+        assert base_data_service.get(song1.id).path == 'song1'
 
-        assert song_service.get(song1.id).path == 'song1'
+
+class TestSongService:
+
+    def test_song_service_uses_song_type(self, session):
+        song_service = SongService(session)
+
+        song1 = add_song(session)
+
+        assert song_service.get(song1.id) == song1
 
 
 class TestPlaylistService:

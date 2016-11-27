@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import abort, Flask, jsonify, request
 from flask_restful import Api, Resource
 from newmansound.database import scoped_session
 from newmansound.schema import PlaylistRequestSchema, SongSchema
@@ -21,7 +21,7 @@ class PlaylistRequest(Resource):
         app.session.commit()
 
 
-class SongRequest(Resource):
+class SongList(Resource):
     def __init__(self):
         self.song_schema = SongSchema()
         self.song_service = SongService(app.session)
@@ -32,8 +32,24 @@ class SongRequest(Resource):
         return data
 
 
+class Song(Resource):
+    def __init__(self):
+        self.song_schema = SongSchema()
+        self.song_service = SongService(app.session)
+
+    def get(self, song_id):
+        song = self.song_service.get(song_id)
+
+        if not song:
+            abort(404)
+
+        data = self.song_schema.dump(song).data
+        return data
+
+
 api.add_resource(PlaylistRequest, '/playlist')
-api.add_resource(SongRequest, '/song')
+api.add_resource(SongList, '/song')
+api.add_resource(Song, '/song/<song_id>')
 
 
 @app.teardown_appcontext

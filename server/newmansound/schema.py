@@ -19,4 +19,4 @@ class SongSchema(Schema):
 
 
 class PlaylistRequestSchema(Schema):
-    id = fields.Int()
+    id = fields.Int(required=True)

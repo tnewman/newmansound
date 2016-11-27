@@ -16,7 +16,11 @@ class PlaylistRequest(Resource):
 
     def post(self):
         json = request.get_json()
-        song = self.playlist_request_schema.load(json).data
+        song, error = self.playlist_request_schema.load(json)
+
+        if error:
+            abort(400)
+
         self.playlist_service.enqueue_song(song['id'])
         app.session.commit()
 

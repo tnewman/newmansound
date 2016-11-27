@@ -19,6 +19,9 @@ class TestPlaylistRequest:
 
         assert playlist_service.dequeue_song().path == 'newsong'
 
+    def test_post_status_400_on_bad_data(self, client, playlist_service, session):
+        assert client.post('/playlist', data=json.dumps({}), content_type='application/json').status_code == 400
+
 
 class TestSongList:
 

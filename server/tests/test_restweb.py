@@ -5,15 +5,13 @@ from newmansound.restweb import app, PlaylistService, SongService
 from newmansound.schema import SongSchema
 
 from tests.fixtures import client, engine, playlist_service, session
+from tests.helpers import add_song
 
 
 class TestPlaylistRequest:
 
     def test_post_creates_playlist_request(self, client, playlist_service, session):
-        song = Song()
-        song.path = 'newsong'
-        session.add(song)
-        session.commit()
+        song = add_song(session, path='newsong')
 
         client.post('/playlist', data=json.dumps({'id': song.id}), content_type='application/json')
 
@@ -26,14 +24,8 @@ class TestPlaylistRequest:
 class TestSongList:
 
     def test_get_returns_list_of_songs(self, client, session):
-        song1 = Song()
-        song1.name = 'song'
-        session.add(song1)
-
-        song2 = Song()
-        song2.name = 'song'
-        session.add(song2)
-        session.commit()
+        add_song(session)
+        add_song(session)
 
         song_schema = SongSchema()
 
@@ -44,10 +36,7 @@ class TestSongList:
 class TestSong:
 
     def test_get_returns_song_with_a_given_id(self, client, session):
-        song1 = Song()
-        song1.name = 'song'
-        session.add(song1)
-        session.commit()
+        song1 = add_song(session, name='song')
 
         song_schema = SongSchema()
         song = song_schema.load(json.loads(client.get('/song/' + str(song1.id)).data.decode('utf8')))

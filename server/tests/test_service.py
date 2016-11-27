@@ -3,15 +3,8 @@ import pytest
 from newmansound.model import Playlist, Song
 from newmansound.service import JukeboxService, PlaylistService, SongService
 
+from tests.helpers import add_song
 from tests.fixtures import audio_playback_service, playlist_service, engine, session
-
-
-def _add_song(session, path):
-    song = Song()
-    song.path = path
-    session.add(song)
-
-    return song
 
 
 def _add_playlist(session, song, position):
@@ -50,8 +43,7 @@ class TestJukeboxService:
     def test_jukebox_service_plays_song(self, audio_playback_service, playlist_service, session):
         jukebox_service = JukeboxService(audio_playback_service, playlist_service)
 
-        song = _add_song(session, 'song')
-        _add_playlist(session, song, 1)
+        _add_playlist(session, add_song(session, path='song'), 1)
 
         jukebox_service.play_next_song()
 
@@ -70,7 +62,7 @@ class TestJukeboxService:
 
         audio_playback_service._player.get_queue_len.return_value = 1000000
 
-        song = _add_song(session, 'song')
+        song = add_song(session, path='song')
         _add_playlist(session, song, 1)
 
         jukebox_service.play_next_song()
@@ -81,8 +73,7 @@ class TestJukeboxService:
                                                                      session):
         jukebox_service = JukeboxService(audio_playback_service, playlist_service)
 
-        song = _add_song(session, 'song')
-        _add_playlist(session, song, 1)
+        _add_playlist(session, add_song(session, path='song'), 1)
 
         audio_playback_service._player.get_queue_len.return_value = 1000000
 
@@ -110,8 +101,7 @@ class TestJukeboxService:
         jukebox_service = JukeboxService(audio_playback_service, playlist_service)
         audio_playback_service._player.queue.side_effect = Exception()
 
-        song = _add_song(session, 'song')
-        _add_playlist(session, song, 1)
+        _add_playlist(session, add_song(session, path='song'), 1)
 
         jukebox_service.play_next_song()
 
@@ -121,8 +111,8 @@ class TestSongService:
     def test_song_service_returns_all_songs(self, session):
         song_service = SongService(session)
 
-        song1 = _add_song(session, 'song1')
-        song2 = _add_song(session, 'song2')
+        add_song(session, path='song1')
+        add_song(session, path='song2')
 
         assert song_service.all()[0].path == 'song1'
         assert len(song_service.all()) == 2
@@ -130,8 +120,8 @@ class TestSongService:
     def test_song_service_returns_correct_song(self, session):
         song_service = SongService(session)
 
-        song1 = _add_song(session, 'song1')
-        _add_song(session, 'song2')
+        song1 = add_song(session, path='song1')
+        add_song(session, path='song2')
 
         session.commit()
 
@@ -140,12 +130,9 @@ class TestSongService:
 
 class TestPlaylistService:
 
-    def test_enqueue_song_adds_with_highest_position(self, session):
-        playlist_service = PlaylistService(session)
-
-        song1 = _add_song(session, 'song1')
-        song2 = _add_song(session, 'song2')
-        session.commit()
+    def test_enqueue_song_adds_with_highest_position(self, session, playlist_service):
+        song1 = add_song(session, path='song1')
+        song2 = add_song(session, path='song2')
 
         _add_playlist(session, song1, 2)
 
@@ -153,38 +140,27 @@ class TestPlaylistService:
 
         assert 'song2' == session.query(Playlist).filter_by(position=3).first().song.path
 
-    def test_enqueue_uses_position_1_when_playlist_empty(self, session):
-        playlist_service = PlaylistService(session)
-
-        song1 = _add_song(session, 'song1')
-        session.commit()
+    def test_enqueue_uses_position_1_when_playlist_empty(self, session, playlist_service):
+        song1 = add_song(session, path='song1')
 
         playlist_service.enqueue_song(song1.id)
 
         assert 1 == session.query(Playlist).first().position
 
-    def test_dequeue_song_returns_song_with_lowest_position(self, session):
-        playlist_service = PlaylistService(session)
-
-        song1 = _add_song(session, 'song1')
-        song2 = _add_song(session, 'song2')
+    def test_dequeue_song_returns_song_with_lowest_position(self, session, playlist_service):
+        song1 = add_song(session, path='song1')
+        song2 = add_song(session, path='song2')
 
         _add_playlist(session, song1, 2)
         _add_playlist(session, song2, 1)
 
         assert song2 == playlist_service.dequeue_song()
 
-    def test_dequeue_song_returns_none_on_empty_playlist(self, session):
-        playlist_service = PlaylistService(session)
-
+    def test_dequeue_song_returns_none_on_empty_playlist(self, session, playlist_service):
         assert None is playlist_service.dequeue_song()
 
-    def test_dequeue_song_removes_song_from_queue(self, session):
-        playlist_service = PlaylistService(session)
-
-        song = _add_song(session, 'song1')
-
-        _add_playlist(session, song, 1)
+    def test_dequeue_song_removes_song_from_queue(self, session, playlist_service):
+        _add_playlist(session, add_song(session, path='song1'), 1)
 
         playlist_service.dequeue_song()
 

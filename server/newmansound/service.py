@@ -116,8 +116,14 @@ class SongService:
         self.session = session
 
     def all(self):
-        """Retrives all songs.
+        """Retrieves all songs.
         :returns: A list of all songs.
         :rtype: list of Song
         :"""
         return self.session.query(Song).all()
+
+    def get(self, song_id):
+        """Retrieves a song with a given song id.
+        :returns: Song for the given song id or None if the song does not exist.
+        :rtype: Song"""
+        return self.session.query(Song).get(song_id)

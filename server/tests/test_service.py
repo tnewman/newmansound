@@ -127,6 +127,16 @@ class TestSongService:
         assert song_service.all()[0].path == 'song1'
         assert len(song_service.all()) == 2
 
+    def test_song_service_returns_correct_song(self, session):
+        song_service = SongService(session)
+
+        song1 = _add_song(session, 'song1')
+        _add_song(session, 'song2')
+
+        session.commit()
+
+        assert song_service.get(song1.id).path == 'song1'
+
 
 class TestPlaylistService:
 

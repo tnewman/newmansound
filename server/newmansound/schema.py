@@ -1,20 +1,20 @@
 from marshmallow import Schema, fields
 
 
-class ArtistSchema(Schema):
+class BaseSchema(Schema):
     id = fields.Int()
     name = fields.String()
 
 
-class AlbumSchema(Schema):
-    id = fields.Int()
-    name = fields.String()
+class ArtistSchema(BaseSchema):
+    pass
+
+
+class AlbumSchema(BaseSchema):
     artist = fields.Nested('ArtistSchema')
 
 
-class SongSchema(Schema):
-    id = fields.Int()
-    name = fields.String()
+class SongSchema(BaseSchema):
     album = fields.Nested('AlbumSchema')
 
 

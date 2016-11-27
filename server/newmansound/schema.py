@@ -3,7 +3,7 @@ from marshmallow import Schema, fields
 
 class BaseSchema(Schema):
     id = fields.Int()
-    name = fields.String()
+    name = fields.String(required=True)
 
 
 class ArtistSchema(BaseSchema):

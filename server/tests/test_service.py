@@ -129,31 +129,25 @@ class TestBaseDataService:
 class TestAlbumService:
 
     def test_album_service_uses_album_type(self, session):
-        album_service = AlbumService(session)
-
         album1 = add_album(session)
 
-        assert album_service.get(album1.id) == album1
+        assert AlbumService(session).get(album1.id) == album1
 
 
 class TestArtistService:
 
     def test_artist_service_uses_artist_type(self, session):
-        artist_service = ArtistService(session)
-
         artist1 = add_artist(session)
 
-        assert artist_service.get(artist1.id) == artist1
+        assert ArtistService(session).get(artist1.id) == artist1
 
 
 class TestSongService:
 
     def test_song_service_uses_song_type(self, session):
-        song_service = SongService(session)
-
         song1 = add_song(session)
 
-        assert song_service.get(song1.id) == song1
+        assert SongService(session).get(song1.id) == song1
 
 
 class TestPlaylistService:

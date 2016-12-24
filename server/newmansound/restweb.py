@@ -1,8 +1,9 @@
 from flask import abort, Flask, jsonify, request
 from flask_restful import Api, Resource
 from newmansound.database import scoped_session
-from newmansound.schema import AlbumSchema, PlaylistRequestSchema, SongSchema
-from newmansound.service import AlbumService, AudioPlaybackService, JukeboxService, PlaylistService, SongService
+from newmansound.schema import AlbumSchema, ArtistSchema, PlaylistRequestSchema, SongSchema
+from newmansound.service import AlbumService, ArtistService, AudioPlaybackService, JukeboxService, PlaylistService, \
+    SongService
 
 app = Flask('newmansoundrestweb')
 api = Api(app)
@@ -61,6 +62,16 @@ class Album(BaseResource):
         super().__init__(AlbumSchema(), AlbumService(app.session))
 
 
+class ArtistList(BaseListResource):
+    def __init__(self):
+        super().__init__(ArtistSchema(), ArtistService(app.session))
+
+
+class Artist(BaseResource):
+    def __init__(self):
+        super().__init__(ArtistSchema(), ArtistService(app.session))
+
+
 class SongList(BaseListResource):
     def __init__(self):
         super().__init__(SongSchema(), SongService(app.session))
@@ -74,6 +85,8 @@ class Song(BaseResource):
 api.add_resource(PlaylistRequest, '/playlist')
 api.add_resource(AlbumList, '/album')
 api.add_resource(Album, '/album/<id>')
+api.add_resource(ArtistList, '/artist')
+api.add_resource(Artist, '/artist/<id>')
 api.add_resource(SongList, '/song')
 api.add_resource(Song, '/song/<id>')
 

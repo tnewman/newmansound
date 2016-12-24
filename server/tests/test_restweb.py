@@ -2,10 +2,10 @@ import json
 import pytest
 from newmansound.model import Artist, Album, Song
 from newmansound.restweb import app, PlaylistService, SongService
-from newmansound.schema import AlbumSchema, SongSchema
+from newmansound.schema import AlbumSchema, ArtistSchema, SongSchema
 
 from tests.fixtures import client, engine, playlist_service, session
-from tests.helpers import add_album, add_song
+from tests.helpers import add_album, add_artist, add_song
 
 
 class TestAlbumList:
@@ -28,6 +28,34 @@ class TestAlbum:
         album_schema = AlbumSchema()
         album = album_schema.load(json.loads(client.get('/album/' + str(album1.id)).data.decode('utf8')))
         assert album.data['name'] == 'album'
+
+
+class TestArtistList:
+
+    def test_get_returns_list_of_artists(self, client, session):
+        add_artist(session)
+        add_artist(session)
+
+        artist_schema = ArtistSchema()
+
+        artists = artist_schema.load(json.loads(client.get('/artist').data.decode('utf8')))
+        assert len(artists) == 2
+
+
+class TestAlbum:
+
+    def test_get_returns_album_with_a_given_id(self, client, session):
+        artist1 = add_artist(session, name='album')
+
+        artist_schema = ArtistSchema()
+        artist = artist_schema.load(json.loads(client.get('/artist/' + str(artist1.id)).data.decode('utf8')))
+        assert artist.data['name'] == 'album'
+
+
+class TestArtist:
+
+    def test_get_returns_artist_with_a_given_id(self, client, session):
+        pass
 
 
 class TestPlaylistRequest:

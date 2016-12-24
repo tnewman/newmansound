@@ -2,10 +2,22 @@ import json
 import pytest
 from newmansound.model import Artist, Album, Song
 from newmansound.restweb import app, PlaylistService, SongService
-from newmansound.schema import SongSchema
+from newmansound.schema import AlbumSchema, SongSchema
 
 from tests.fixtures import client, engine, playlist_service, session
-from tests.helpers import add_song
+from tests.helpers import add_album, add_song
+
+
+class TestAlbumList:
+
+    def test_get_returns_list_of_albums(self, client, session):
+        add_album(session)
+        add_album(session)
+
+        album_schema = AlbumSchema()
+
+        albums = album_schema.load(json.loads(client.get('/album').data.decode('utf8')))
+        assert len(albums) == 2
 
 
 class TestPlaylistRequest:

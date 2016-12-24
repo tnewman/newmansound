@@ -30,6 +30,16 @@ class TestAlbum:
         assert album.data['name'] == 'album'
 
 
+class TestAlbum:
+
+    def test_get_returns_album_with_a_given_id(self, client, session):
+        album1 = add_album(session, name='album')
+
+        album_schema = AlbumSchema()
+        album = album_schema.load(json.loads(client.get('/album/' + str(album1.id)).data.decode('utf8')))
+        assert album.data['name'] == 'album'
+
+
 class TestArtistList:
 
     def test_get_returns_list_of_artists(self, client, session):
@@ -42,20 +52,14 @@ class TestArtistList:
         assert len(artists) == 2
 
 
-class TestAlbum:
-
-    def test_get_returns_album_with_a_given_id(self, client, session):
-        artist1 = add_artist(session, name='album')
-
-        artist_schema = ArtistSchema()
-        artist = artist_schema.load(json.loads(client.get('/artist/' + str(artist1.id)).data.decode('utf8')))
-        assert artist.data['name'] == 'album'
-
-
 class TestArtist:
 
     def test_get_returns_artist_with_a_given_id(self, client, session):
-        pass
+        artist1 = add_artist(session, name='artist')
+
+        artist_schema = ArtistSchema()
+        artist = artist_schema.load(json.loads(client.get('/artist/' + str(artist1.id)).data.decode('utf8')))
+        assert artist.data['name'] == 'artist'
 
 
 class TestPlaylistRequest:

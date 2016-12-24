@@ -56,6 +56,11 @@ class AlbumList(BaseListResource):
         super().__init__(AlbumSchema(), AlbumService(app.session))
 
 
+class Album(BaseResource):
+    def __init__(self):
+        super().__init__(AlbumSchema(), AlbumService(app.session))
+
+
 class SongList(BaseListResource):
     def __init__(self):
         super().__init__(SongSchema(), SongService(app.session))
@@ -68,6 +73,7 @@ class Song(BaseResource):
 
 api.add_resource(PlaylistRequest, '/playlist')
 api.add_resource(AlbumList, '/album')
+api.add_resource(Album, '/album/<id>')
 api.add_resource(SongList, '/song')
 api.add_resource(Song, '/song/<id>')
 

@@ -20,6 +20,16 @@ class TestAlbumList:
         assert len(albums) == 2
 
 
+class TestAlbum:
+
+    def test_get_returns_album_with_a_given_id(self, client, session):
+        album1 = add_album(session, name='album')
+
+        album_schema = AlbumSchema()
+        album = album_schema.load(json.loads(client.get('/album/' + str(album1.id)).data.decode('utf8')))
+        assert album.data['name'] == 'album'
+
+
 class TestPlaylistRequest:
 
     def test_post_creates_playlist_request(self, client, playlist_service, session):

@@ -82,13 +82,13 @@ class Song(BaseResource):
         super().__init__(SongSchema(), SongService(app.session))
 
 
-api.add_resource(PlaylistRequest, '/playlist')
-api.add_resource(AlbumList, '/album')
-api.add_resource(Album, '/album/<id>')
-api.add_resource(ArtistList, '/artist')
-api.add_resource(Artist, '/artist/<id>')
-api.add_resource(SongList, '/song')
-api.add_resource(Song, '/song/<id>')
+api.add_resource(PlaylistRequest, '/playlist/')
+api.add_resource(AlbumList, '/album/')
+api.add_resource(Album, '/album/<id>/')
+api.add_resource(ArtistList, '/artist/')
+api.add_resource(Artist, '/artist/<id>/')
+api.add_resource(SongList, '/song/')
+api.add_resource(Song, '/song/<id>/')
 
 
 @app.teardown_appcontext
